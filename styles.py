@@ -1,0 +1,8 @@
+# styles.py
+import flet as ft
+
+PRIMARY_COLOR = ft.Colors.BLUE_600
+SECONDARY_COLOR = ft.Colors.BLUE_100
+BUTTON_RADIUS = 12
+TEXTFIELD_RADIUS = 8
+PADDING = 20
