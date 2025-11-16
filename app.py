@@ -4,61 +4,61 @@ from views.signup import signup_view
 from views.signin import signin_view
 from views.dashboard import dashboard_view
 
-USERS = {}
 
 def main(page: ft.Page):
     page.title = "My Flet App"
-    
-    def on_route_change(e: ft.RouteChangeEvent):
-        page.views.clear()
+    page.theme_mode = ft.ThemeMode.LIGHT
+
+    # Toggle Dark / Light mode
+    def toggle_theme(e):
+        page.theme_mode = (
+            ft.ThemeMode.DARK if page.theme_mode == ft.ThemeMode.LIGHT else ft.ThemeMode.LIGHT
+        )
+        page.update()
+
+    # Build the AppBar
+    def build_appbar(show_back=False):
+        return ft.AppBar(
+            leading=(
+                ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: page.go("/"))
+                if show_back else None
+            ),
+            title=ft.Text("My Flet App"),
+            actions=[
+                ft.IconButton(
+                    ft.Icons.DARK_MODE if page.theme_mode == ft.ThemeMode.LIGHT else ft.Icons.LIGHT_MODE,
+                    on_click=toggle_theme
+                )
+            ],
+            center_title=False,
+            bgcolor=ft.Colors.ON_SURFACE_VARIANT,
+        )
+
+    def on_route_change(e):
         route = page.route
+        page.views.clear()
+
         if route == "/":
+            page.appbar = build_appbar(show_back=False)
             page.views.append(welcome_view(page))
         elif route == "/signup":
-            page.views.append(signup_view(page, on_signup))
+            page.appbar = build_appbar(show_back=True)
+            page.views.append(signup_view(page))
         elif route == "/signin":
-            page.views.append(signin_view(page, on_signin))
+            page.appbar = build_appbar(show_back=True)
+            page.views.append(signin_view(page))
         elif route == "/dashboard":
-            if "current_user" in page.session:
-                page.views.append(dashboard_view(page, page.session["current_user"]))
-            else:
-                page.go("/signin")
-                return
+            page.appbar = build_appbar(show_back=True)
+            page.views.append(dashboard_view(page))
         else:
             page.go("/")
-        page.update()
-
-    def on_signup(name, email, password):
-        if email in USERS:
-            page.dialog = ft.AlertDialog(
-                title=ft.Text("Error"),
-                content=ft.Text("User already exists"),
-                actions=[ft.TextButton("OK", on_click=lambda e: setattr(page.dialog, "open", False))]
-            )
-            page.dialog.open = True
-            page.update()
             return
-        USERS[email] = {"name": name, "email": email, "password": password}
-        page.session["current_user"] = USERS[email]
-        page.go("/dashboard")
-        page.update()
 
-    def on_signin(email, password):
-        user = USERS.get(email)
-        if user and user["password"] == password:
-            page.session["current_user"] = user
-            page.go("/dashboard")
-        else:
-            page.dialog = ft.AlertDialog(
-                title=ft.Text("Error"),
-                content=ft.Text("Invalid credentials"),
-                actions=[ft.TextButton("OK", on_click=lambda e: setattr(page.dialog, "open", False))]
-            )
-            page.dialog.open = True
         page.update()
 
     page.on_route_change = on_route_change
+    page.on_resize = lambda e: page.update()
     page.go(page.route)
-    page.update()
+
 
 ft.app(target=main)

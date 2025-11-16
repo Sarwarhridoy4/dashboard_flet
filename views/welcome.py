@@ -1,31 +1,48 @@
 import flet as ft
-from styles import PRIMARY_COLOR, BUTTON_RADIUS, PADDING
+from styles import PRIMARY_COLOR, BUTTON_RADIUS, PADDING, responsive_text_size, button_width
 
 def welcome_view(page):
-    button_style = ft.ButtonStyle(
-        bgcolor=PRIMARY_COLOR,
-        color=ft.Colors.WHITE,
-        shape=ft.RoundedRectangleBorder(radius=BUTTON_RADIUS),
-        padding=ft.padding.symmetric(vertical=12, horizontal=50),
-    )
 
     return ft.View(
         "/",
-        [
+        controls=[
             ft.Container(
+                expand=True,
+                alignment=ft.alignment.center,
+                padding=PADDING,
                 content=ft.Column(
                     [
-                        ft.Text("Welcome to MyApp", size=32, weight=ft.FontWeight.BOLD),
-                        ft.ElevatedButton("Sign Up", on_click=lambda e: page.go("/signup"), style=button_style),
-                        ft.ElevatedButton("Sign In", on_click=lambda e: page.go("/signin"), style=button_style),
+                        ft.Text(
+                            "Welcome to MyApp",
+                            size=responsive_text_size(page),
+                            weight=ft.FontWeight.BOLD,
+                            text_align="center",
+                        ),
+                        ft.ElevatedButton(
+                            "Sign Up",
+                            width=button_width(page),
+                            style=ft.ButtonStyle(
+                                bgcolor=PRIMARY_COLOR,
+                                color=ft.Colors.WHITE,
+                                shape=ft.RoundedRectangleBorder(radius=BUTTON_RADIUS),
+                            ),
+                            on_click=lambda e: page.go("/signup"),
+                        ),
+                        ft.ElevatedButton(
+                            "Sign In",
+                            width=button_width(page),
+                            style=ft.ButtonStyle(
+                                bgcolor=PRIMARY_COLOR,
+                                color=ft.Colors.WHITE,
+                                shape=ft.RoundedRectangleBorder(radius=BUTTON_RADIUS),
+                            ),
+                            on_click=lambda e: page.go("/signin"),
+                        ),
                     ],
+                    spacing=25,
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=20,
                 ),
-                padding=PADDING,
-                alignment=ft.alignment.center,
-                expand=True,
             )
-        ]
+        ],
     )
